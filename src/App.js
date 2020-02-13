@@ -2,9 +2,12 @@ import React from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import Alert from 'react-bootstrap/Alert'
+import Button from 'react-bootstrap/Button'
 import InputGroup from 'react-bootstrap/InputGroup'
 import FormControl from 'react-bootstrap/FormControl'
-import Alert from 'react-bootstrap/Alert'
+
+import WHIMCInput from './components/WHIMCInput'
 
 function App() {
   return (
@@ -20,37 +23,10 @@ function App() {
           <Alert variant="primary">
             <Alert.Heading>Welcome to the WHIMC Path Generator!</Alert.Heading>
           
-          <InputGroup>
-            <InputGroup.Prepend>
-              <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
-            </InputGroup.Prepend>
-            <FormControl
-              placeholder="Username"
-              aria-label="Username"
-              aria-describedby="basic-addon1"
-              />
-          </InputGroup>
-          
-          <InputGroup>
-            <InputGroup.Prepend>
-              <InputGroup.Text id="basic-addon1">#</InputGroup.Text>
-            </InputGroup.Prepend>
-            <FormControl
-              placeholder="Start time (Unix-based)"
-              aria-label="Start time (Unix-based)"
-              aria-describedby="basic-addon1"
-              />
-          </InputGroup>
-          <InputGroup>
-            <InputGroup.Prepend>
-              <InputGroup.Text id="basic-addon1">#</InputGroup.Text>
-            </InputGroup.Prepend>
-            <FormControl
-              placeholder="End time (Unix-based)"
-              aria-label="End time (Unix-based)"
-              aria-describedby="basic-addon1"
-              />
-          </InputGroup>
+          <WHIMCInput symbol="@" text="Username" className="pb-2"/>
+          <WHIMCInput symbol="#" text="Start time (Unix-based)" className="pb-2"/>
+          <WHIMCInput symbol="#" text="End time (Unix-based)" className="pb-2"/>
+          <Button variant="primary">Generate Images</Button>
           </Alert>
         </div>
       </header>
