@@ -1,21 +1,17 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-import InputGroup from 'react-bootstrap/InputGroup'
-import FormControl from 'react-bootstrap/FormControl'
+import CustomInput from './CustomInput';
+import TimeDisplayer from './TimeDisplayer';
 
 class WHIMCInput extends React.Component {
     render() {
         return (
-            <InputGroup className={this.props.className}>
-                <InputGroup.Prepend>
-                    <InputGroup.Text id="basic-addon1">{this.props.symbol}</InputGroup.Text>
-                </InputGroup.Prepend>
-                <FormControl
-                    placeholder={this.props.text}
-                    aria-label={this.props.text}
-                    aria-describedby="basic-addon1"
-                />
-            </InputGroup>
+            <div>
+                <TimeDisplayer/>
+                <CustomInput symbol="@" text="Username" className="pb-2" />
+                <CustomInput symbol="#" text="Start time (Unix-based)" className="pb-2" />
+                <CustomInput symbol="#" text="End time (Unix-based)" className="pb-2" />
+            </div>
         )
     }
 }
