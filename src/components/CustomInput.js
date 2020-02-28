@@ -28,6 +28,7 @@ class CustomInput extends React.Component {
             <InputGroup className={this.props.className}>
                 {prepend}
                 <FormControl
+                    onChange={this.props.onChange}
                     placeholder={this.props.text}
                     aria-label={this.props.text}
                     aria-describedby="basic-addon1"

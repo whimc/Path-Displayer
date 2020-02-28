@@ -2,12 +2,10 @@ import React from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import Alert from 'react-bootstrap/Alert'
-import Button from 'react-bootstrap/Button'
-
-import WHIMCInput from './components/WHIMCInput'
+import PathDisplayer from './components/PathDisplayer';
 
 function App() {
+
   return (
     <div className="App">
       <link
@@ -18,12 +16,7 @@ function App() {
       />
       <header className="App-header">
         <div>
-          <Alert variant="primary" className="mx-2">
-            <Alert.Heading>Welcome to the WHIMC Path Generator!</Alert.Heading>
-            <hr/>
-            <WHIMCInput/>
-            <Button variant="primary" disabled>Generate Images</Button>
-          </Alert>
+          <PathDisplayer />
         </div>
       </header>
     </div>

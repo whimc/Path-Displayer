@@ -18,7 +18,7 @@ export function IsValidDate(timestamp) {
 
 export function FormatTimestamp(timestamp) {
     if (!IsValidDate(timestamp)) {
-        return "N/A";
+        return "N/A" + (timestamp ? ` (${timestamp})` : "");
     }
 
     timestamp = parseInt(timestamp) * 1000
