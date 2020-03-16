@@ -17,13 +17,33 @@ class SessionSelect extends React.Component {
         this.state = {
             playersLoading: true,
             playerSessionsLoading: false,
+            playerSessionsDisabled: true,
             recentSessionsLoading: true,
+
+            allPlayers: [],
+            playerSessions: [],
+            recentSessions: [],
+
+            selectedPlayer: '',
+            selectedPlayerSession: {},
+            selectedRecentSession: {},
         }
     }
 
     componentDidMount() {
-        // TODO: Populate user and recent session lists
-        helpers.GetAllPlayersQuery();
+        helpers.QueryAllPlayers(data => {
+            this.setState({
+                allPlayers: data,
+                playersLoading: false,
+            })
+        })
+
+        helpers.QueryRecentSessions(sessions => {
+            this.setState({
+                recentSessions: sessions,
+                recentSessionsLoading: false,
+            })
+        })
     }
 
     render() {
@@ -35,7 +55,8 @@ class SessionSelect extends React.Component {
                 <Select
                     className="Custom-select mb-1"
                     placeholder="Select a user"
-                    options={options}
+                    options={this.state.allPlayers}
+                    isClearable
                     isLoading={this.state.playersLoading}
                     isDisabled={this.state.playersLoading}
                 />
@@ -43,8 +64,9 @@ class SessionSelect extends React.Component {
                     className="Custom-select mb-4"
                     placeholder="Select a session"
                     options={options}
+                    isClearable
                     isLoading={this.state.playerSessionsLoading}
-                    isDisabled={this.state.playerSessionsLoading}
+                    isDisabled={this.state.playerSessionsDisabled}
                 />
 
                 <p className="text-left m-0 p-0"><b>
@@ -53,7 +75,8 @@ class SessionSelect extends React.Component {
                 <Select
                     className="Custom-select"
                     placeholder="Select a recent session"
-                    options={options}
+                    options={this.state.recentSessions}
+                    isClearable
                     isLoading={this.state.recentSessionsLoading}
                     isDisabled={this.state.recentSessionsLoading}
                 />

@@ -1,6 +1,8 @@
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
-
+const MONTHS_SHORT = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 
+    'Jul.', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
+const RECENT_SESSIONS = 20;
 const NAME_REGEX = /(\w+)-([0-9]+)-([0-9]+)_(\w+)\..*/;
 
 export function IsValidDate(timestamp) {
@@ -27,7 +29,7 @@ export function FormatTimestamp(timestamp) {
     var date = new Date(timestamp);
 
     var day = date.getDate();
-    var month = MONTHS[date.getMonth()];
+    var month = MONTHS_SHORT[date.getMonth()];
     var year = date.getFullYear();
     var hour = date.getHours() % 12;
     if (hour === 0) hour = 12;
@@ -37,28 +39,63 @@ export function FormatTimestamp(timestamp) {
     return month + ' ' + day + ' ' + year + ' ' + hour + ':' + min.substr(-2) + ' ' + am_pm;
 }
 
-export function GetTimeColorClass(timestamp) {
-    if (!IsValidDate(timestamp)) {
-        return 'text-danger';
-    }
+export function GetDuration(startTime, endTime, decimal=false) {
+    var minutes = (endTime - startTime) / 60
 
-    return '';
+    if (decimal)
+        return minutes.toFixed(2);
+    return parseInt(minutes, 10);
 }
 
 export function GetWorldName(imageName) {
     return imageName.match(NAME_REGEX)[4];
 }
 
-export function GetAllPlayersQuery() {
-    return 'https://rpaowv6m75.execute-api.us-east-2.amazonaws.com/beta/getallusers/';
+export function QueryAllPlayers(callback) {
+    var query = 'https://rpaowv6m75.execute-api.us-east-2.amazonaws.com/beta/getallusers/';
+    fetch(query).then(result => result.json()).then(data => {
+
+        // Sort the names first
+        data.sort(function (a, b) {
+            var nameA = a.username.toLowerCase(), nameB = b.username.toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+
+        // Store the entries in an array
+        var users = []
+        data.forEach(elem => {
+            users.push({
+                value: elem.userId,
+                label: elem.username,
+            })
+        });
+        callback(users)
+    })
 }
 
 export function GetPlayerSessionsQuery(id) {
     return `https://rpaowv6m75.execute-api.us-east-2.amazonaws.com/beta/getsessions/${id}`;
 }
 
-export function GetRecentSessionsQuery(recent) {
-    return `https://rpaowv6m75.execute-api.us-east-2.amazonaws.com/beta/getrecentsessions/${recent}`;
+export function QueryRecentSessions(callback) {
+    var query = `https://rpaowv6m75.execute-api.us-east-2.amazonaws.com/beta/getrecentsessions/${RECENT_SESSIONS}`;
+    fetch(query).then(result => result.json()).then(data => {
+        var sessions = []
+        data.forEach(elem => {
+            
+            var duration = GetDuration(elem.loginTime, elem.logoutTime)
+            sessions.push({
+                value: elem.sessionId,
+                label: `${elem.username}, ${FormatTimestamp(elem.loginTime)} (${duration} mins)`,
+                userId: elem.userId,
+                username: elem.username,
+                start_time: elem.loginTime,
+                end_time: elem.logoutTime,
+            })
+
+            callback(sessions)
+        });
+    })
 }
 
 export function GetPathGeneratorQuery(username, starttime, endtime) {
