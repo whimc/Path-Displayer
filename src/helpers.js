@@ -1,6 +1,8 @@
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
-    
+
+const NAME_REGEX = /(\w+)-([0-9]+)-([0-9]+)_(\w+)\..*/;
+
 export function IsValidDate(timestamp) {
     if (isNaN(timestamp) || timestamp < 0) {
         return false;
@@ -37,8 +39,28 @@ export function FormatTimestamp(timestamp) {
 
 export function GetTimeColorClass(timestamp) {
     if (!IsValidDate(timestamp)) {
-        return 'text-danger'
+        return 'text-danger';
     }
 
-    return ''
+    return '';
+}
+
+export function GetWorldName(imageName) {
+    return imageName.match(NAME_REGEX)[4];
+}
+
+export function GetAllPlayersQuery() {
+    return 'https://rpaowv6m75.execute-api.us-east-2.amazonaws.com/beta/getallusers/';
+}
+
+export function GetPlayerSessionsQuery(id) {
+    return `https://rpaowv6m75.execute-api.us-east-2.amazonaws.com/beta/getsessions/${id}`;
+}
+
+export function GetRecentSessionsQuery(recent) {
+    return `https://rpaowv6m75.execute-api.us-east-2.amazonaws.com/beta/getrecentsessions/${recent}`;
+}
+
+export function GetPathGeneratorQuery(username, starttime, endtime) {
+    return `api.henhapl.me/pathgenerator?username=${username}&start_time=${starttime}&end_time=${endtime}`;
 }

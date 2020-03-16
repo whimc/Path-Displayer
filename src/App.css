@@ -20,12 +20,28 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  font-size: 15px;
   color: white;
 }
 
 .App-link {
   color: #61dafb;
+}
+
+.Path-displayer {
+  margin: auto;
+  width: 600px;
+  max-width: 95vw;
+}
+
+.Path-images {
+  width: 1000px;
+  max-width: 95vw;
+}
+
+.Custom-select {
+  font-size: 15px;
+  text-align: left;
 }
 
 @keyframes App-logo-spin {
