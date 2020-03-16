@@ -1,11 +1,11 @@
 import React from 'react';
 
 import Alert from 'react-bootstrap/Alert';
-import { GetWorldName } from '../helpers.js';
+import { GetWorldFromImageName } from '../helpers';
 
 class PathImage extends React.Component {
     render() {
-        var worldName = GetWorldName(this.props.title)
+        var worldName = GetWorldFromImageName(this.props.title)
         return (
             <Alert variant="primary">
                 <Alert.Heading>{worldName}</Alert.Heading>

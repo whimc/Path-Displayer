@@ -47,7 +47,7 @@ export function GetDuration(startTime, endTime, decimal=false) {
     return parseInt(minutes, 10);
 }
 
-export function GetWorldName(imageName) {
+export function GetWorldFromImageName(imageName) {
     return imageName.match(NAME_REGEX)[4];
 }
 
