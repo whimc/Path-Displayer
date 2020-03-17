@@ -17,11 +17,16 @@ class PathDisplayer extends React.Component {
 
         this.state = {
             loading: false,
+            session: {},
             username: '',
             start_time: '',
             end_time: '',
             images: [],
         }
+    }
+
+    handleSessionChange(value) {
+        this.setState({ session: value });
     }
 
     generateButtonClick() {
@@ -65,7 +70,9 @@ class PathDisplayer extends React.Component {
                 <Alert variant="primary">
                     <Alert.Heading>Welcome to the WHIMC Path Generator!</Alert.Heading>
                     <hr />
-                    <SessionSelect />
+                    <SessionSelect
+                        sessionChange={this.handleSessionChange}
+                    />
                     <hr />
                     <Button 
                         variant="primary"

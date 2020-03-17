@@ -1,5 +1,3 @@
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'];
 const MONTHS_SHORT = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 
     'Jul.', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
 const RECENT_SESSIONS = 20;
@@ -73,13 +71,32 @@ export function QueryAllPlayers(callback) {
     })
 }
 
-export function GetPlayerSessionsQuery(id) {
-    return `https://rpaowv6m75.execute-api.us-east-2.amazonaws.com/beta/getsessions/${id}`;
+export function QueryPlayerSessions(userId, callback) {
+    var query = `https://rpaowv6m75.execute-api.us-east-2.amazonaws.com/beta/getsessions/${userId}`;
+    fetch(query).then(result => result.json()).then(data => {
+        var sessions = []
+        data.forEach(elem => {
+            
+            var duration = GetDuration(elem.loginTime, elem.logoutTime)
+            sessions.push({
+                value: elem.sessionId,
+                label: `${FormatTimestamp(elem.loginTime)} (${duration} mins)`,
+                userId: elem.userId,
+                username: elem.username,
+                start_time: elem.loginTime,
+                end_time: elem.logoutTime,
+            })
+
+        });
+        sessions.reverse()
+        callback(sessions)
+    })
 }
 
 export function QueryRecentSessions(callback) {
     var query = `https://rpaowv6m75.execute-api.us-east-2.amazonaws.com/beta/getrecentsessions/${RECENT_SESSIONS}`;
     fetch(query).then(result => result.json()).then(data => {
+
         var sessions = []
         data.forEach(elem => {
             
@@ -93,8 +110,9 @@ export function QueryRecentSessions(callback) {
                 end_time: elem.logoutTime,
             })
 
-            callback(sessions)
         });
+        sessions.reverse()
+        callback(sessions)
     })
 }
 

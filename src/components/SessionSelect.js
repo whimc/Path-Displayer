@@ -14,6 +14,10 @@ class SessionSelect extends React.Component {
     constructor(props) {
         super(props)
 
+        this.handleSelectUser = this.handleSelectUser.bind(this);
+        this.handleSelectSession = this.handleSelectSession.bind(this);
+        this.handleSelectRecentSession = this.handleSelectRecentSession.bind(this);
+
         this.state = {
             playersLoading: true,
             playerSessionsLoading: false,
@@ -24,12 +28,15 @@ class SessionSelect extends React.Component {
             playerSessions: [],
             recentSessions: [],
 
-            selectedPlayer: '',
+            selectedPlayer: {},
             selectedPlayerSession: {},
             selectedRecentSession: {},
         }
     }
 
+    /**
+     * Generate the list of players and recent sessions
+     */
     componentDidMount() {
         helpers.QueryAllPlayers(data => {
             this.setState({
@@ -46,6 +53,46 @@ class SessionSelect extends React.Component {
         })
     }
 
+    handleSelectUser(value) {
+        console.log(value)
+        this.setState({
+            selectedPlayer: value,
+        }, () => {
+            this.generateUserSessions()
+        });
+    }
+
+    generateUserSessions() {
+        if (!this.state.selectedPlayer) {
+            this.setState({
+                playerSessionsDisabled: true,
+            });
+            return;
+        }
+
+        this.setState({
+            playerSessionsLoading: true,
+            playerSessionsDisabled: true,
+        }, () => {
+            helpers.QueryPlayerSessions(this.state.selectedPlayer.value, sessions => {
+                this.setState({
+                    playerSessions: sessions,
+                    playerSessionsLoading: false,
+                    playerSessionsDisabled: false,
+                });
+            })
+        });
+        
+    }
+
+    handleSelectSession(value) {
+        console.log(value)
+    }
+
+    handleSelectRecentSession(value) {
+        console.log(value)
+    }
+
     render() {
         return (
             <div>
@@ -59,14 +106,16 @@ class SessionSelect extends React.Component {
                     isClearable
                     isLoading={this.state.playersLoading}
                     isDisabled={this.state.playersLoading}
+                    onChange={this.handleSelectUser}
                 />
                 <Select
                     className="Custom-select mb-4"
                     placeholder="Select a session"
-                    options={options}
+                    options={this.state.playerSessions}
                     isClearable
                     isLoading={this.state.playerSessionsLoading}
                     isDisabled={this.state.playerSessionsDisabled}
+                    onChange={this.handleSelectSession}
                 />
 
                 <p className="text-left m-0 p-0"><b>
@@ -79,6 +128,7 @@ class SessionSelect extends React.Component {
                     isClearable
                     isLoading={this.state.recentSessionsLoading}
                     isDisabled={this.state.recentSessionsLoading}
+                    onChange={this.handleSelectRecentSession}
                 />
             </div>
         )
