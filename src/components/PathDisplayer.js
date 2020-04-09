@@ -14,14 +14,12 @@ class PathDisplayer extends React.Component {
         super(props);
         
         this.generateButtonClick = this.generateButtonClick.bind(this);
+        this.handleSessionChange = this.handleSessionChange.bind(this);
 
         this.state = {
             loading: false,
-            session: {},
-            username: '',
-            start_time: '',
-            end_time: '',
-            images: [],
+            session: null,
+            images: null, //[] array of objects usually
         }
     }
 
@@ -32,12 +30,19 @@ class PathDisplayer extends React.Component {
     generateButtonClick() {
         this.setState({
             loading: true,
-            images: [],
+            images: null,
         }, () => {
-            var query = helpers.GetPathGeneratorQuery(
-                this.state.username, this.state.start_time, this.state.end_time
+            helpers.QueryPathGenerator(
+                this.state.session.username,
+                this.state.session.start_time,
+                this.state.session.end_time,
+                images => {
+                    this.setState({
+                        images: images,
+                        loading: false,
+                    })
+                }
             )
-            console.log(query)
         });
     }
 
@@ -46,22 +51,47 @@ class PathDisplayer extends React.Component {
         var spinner = (null)
         if (this.state.loading) {
             spinner = (
-                <Spinner animation="border" role="status">
-                    <span className="sr-only">Loading...</span>
-                </Spinner>
+                <div>
+                    <Spinner animation="border" role="status">
+                        <span className="sr-only">Loading...</span>
+                    </Spinner>
+                    <p>This may take a moment.</p>
+                </div>
             )
         }
 
         // Render all the images or null if none exist
         var images = (null)
-        if (this.state.images.length !== 0) {
-            images = this.state.images.map((item, ind) => (
-                <PathImage 
-                    link={item.link}
-                    title={item.title}
-                />
-            ));
-            images = <div className="Path-images">{images}</div>
+        if (this.state.images !== null) {
+            if (this.state.images.length === 0) {
+                images = (
+                    <div className="Path-displayer">
+                        <Alert variant="danger">
+                            {this.state.session.username} did not explore any maps during this session!
+                        </Alert>
+                    </div>
+                )
+            } else {
+                images = this.state.images.map((item, ind) => (
+                    <PathImage 
+                        key={item.link}
+                        link={item.link}
+                        title={item.title}
+                    />
+                ));
+                images = (
+                    <div>
+                        <div className="Path-displayer">
+                            <Alert variant="success">
+                                {this.state.session.username} explored {this.state.images.length} map(s)!
+                            </Alert>
+                        </div>
+                        <div className="Path-images">
+                            {images}
+                        </div>
+                    </div>
+                )
+            }
         }
 
         return (
@@ -76,6 +106,7 @@ class PathDisplayer extends React.Component {
                     <hr />
                     <Button 
                         variant="primary"
+                        disabled={this.state.session === null || this.state.loading}
                         onClick={this.generateButtonClick}>
                         Generate Images
                     </Button>

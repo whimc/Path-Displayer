@@ -3,12 +3,6 @@ import React from 'react';
 import Select from 'react-select';
 import * as helpers from '../helpers';
 
-const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' }
-]
-
 class SessionSelect extends React.Component {
 
     constructor(props) {
@@ -31,6 +25,12 @@ class SessionSelect extends React.Component {
             selectedPlayer: {},
             selectedPlayerSession: {},
             selectedRecentSession: {},
+
+            selectValues: {
+                player: null,
+                playerSession: null,
+                recentSession: null,
+            },
         }
     }
 
@@ -54,10 +54,19 @@ class SessionSelect extends React.Component {
     }
 
     handleSelectUser(value) {
-        console.log(value)
+
+        var selectValue = {
+            player: value,
+            playerSession: null,
+            recentSession: null,
+        }
+
         this.setState({
             selectedPlayer: value,
+            selectedPlayerSession: null,
+            selectValues: selectValue,
         }, () => {
+            this.props.sessionChange(null);
             this.generateUserSessions()
         });
     }
@@ -86,11 +95,41 @@ class SessionSelect extends React.Component {
     }
 
     handleSelectSession(value) {
-        console.log(value)
+
+        var selectValue = this.state.selectValues
+        selectValue.playerSession = value
+
+        var changedSession = {
+            username: selectValue.player.label,
+            start_time: value.start_time,
+            end_time: value.end_time,
+        }
+
+        this.setState({
+            selectedPlayerSession: value,
+            selectValue: selectValue,
+        }, () => {
+            this.props.sessionChange(changedSession)
+        });
     }
 
     handleSelectRecentSession(value) {
-        console.log(value)
+
+        var selectValue = {
+            player: null,
+            playerSession: null,
+            recentSession: value,
+        }
+
+        this.setState({
+            playerSessionsDisabled: true,
+            selectedPlayer: null,
+            selectedPlayerSession: null,
+            selectedRecentSession: value,
+            selectValues: selectValue,
+        }, () => {
+            this.props.sessionChange(value)
+        });
     }
 
     render() {
@@ -104,6 +143,7 @@ class SessionSelect extends React.Component {
                     placeholder="Select a user"
                     options={this.state.allPlayers}
                     isClearable
+                    value={this.state.selectValues.player}
                     isLoading={this.state.playersLoading}
                     isDisabled={this.state.playersLoading}
                     onChange={this.handleSelectUser}
@@ -113,6 +153,7 @@ class SessionSelect extends React.Component {
                     placeholder="Select a session"
                     options={this.state.playerSessions}
                     isClearable
+                    value={this.state.selectValues.playerSession}
                     isLoading={this.state.playerSessionsLoading}
                     isDisabled={this.state.playerSessionsDisabled}
                     onChange={this.handleSelectSession}
@@ -126,6 +167,7 @@ class SessionSelect extends React.Component {
                     placeholder="Select a recent session"
                     options={this.state.recentSessions}
                     isClearable
+                    value={this.state.selectValues.recentSession}
                     isLoading={this.state.recentSessionsLoading}
                     isDisabled={this.state.recentSessionsLoading}
                     onChange={this.handleSelectRecentSession}

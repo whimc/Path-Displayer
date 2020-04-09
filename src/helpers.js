@@ -76,13 +76,12 @@ export function QueryPlayerSessions(userId, callback) {
     fetch(query).then(result => result.json()).then(data => {
         var sessions = []
         data.forEach(elem => {
-            
             var duration = GetDuration(elem.loginTime, elem.logoutTime)
             sessions.push({
                 value: elem.sessionId,
                 label: `${FormatTimestamp(elem.loginTime)} (${duration} mins)`,
                 userId: elem.userId,
-                username: elem.username,
+                // username: elem.username, // There is no username included!
                 start_time: elem.loginTime,
                 end_time: elem.logoutTime,
             })
@@ -111,11 +110,25 @@ export function QueryRecentSessions(callback) {
             })
 
         });
-        sessions.reverse()
+        // sessions.reverse()
         callback(sessions)
     })
 }
 
-export function GetPathGeneratorQuery(username, starttime, endtime) {
-    return `api.henhapl.me/pathgenerator?username=${username}&start_time=${starttime}&end_time=${endtime}`;
+export function QueryPathGenerator(username, starttime, endtime, callback) {
+    var query = `https://api.henhapl.me/pathgenerator?username=${username}&start_time=${starttime}&end_time=${endtime}`;
+    fetch(query).then(result => result.json()).then(data => {
+
+        var images = []
+        Object.keys(data.links).forEach(elem => {
+            images.push({
+                title: elem,
+                link: data.links[elem],
+            })
+        })
+
+        callback(images)
+    }).catch( err => {
+        callback([])
+    })
 }
