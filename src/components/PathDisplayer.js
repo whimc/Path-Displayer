@@ -20,6 +20,8 @@ class PathDisplayer extends React.Component {
             loading: false,
             session: null,
             images: null, //[] array of objects usually
+
+            generatedSession: null,
         }
     }
 
@@ -31,6 +33,7 @@ class PathDisplayer extends React.Component {
         this.setState({
             loading: true,
             images: null,
+            generatedSession: this.state.session,
         }, () => {
             helpers.QueryPathGenerator(
                 this.state.session.username,
@@ -67,7 +70,7 @@ class PathDisplayer extends React.Component {
                 images = (
                     <div className="Path-displayer">
                         <Alert variant="danger">
-                            {this.state.session.username} did not explore any maps during this session!
+                            {this.state.generatedSession.username} did not explore any maps during this session!
                         </Alert>
                     </div>
                 )
@@ -83,7 +86,7 @@ class PathDisplayer extends React.Component {
                     <div>
                         <div className="Path-displayer">
                             <Alert variant="success">
-                                {this.state.session.username} explored {this.state.images.length} map(s)!
+                                {this.state.generatedSession.username} explored {this.state.images.length} map(s)!
                             </Alert>
                         </div>
                         <div className="Path-images">
