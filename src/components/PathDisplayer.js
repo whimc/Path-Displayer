@@ -12,7 +12,7 @@ class PathDisplayer extends React.Component {
 
     constructor(props) {
         super(props);
-        
+
         this.generateButtonClick = this.generateButtonClick.bind(this);
         this.handleSessionChange = this.handleSessionChange.bind(this);
 
@@ -76,7 +76,7 @@ class PathDisplayer extends React.Component {
                 )
             } else {
                 images = this.state.images.map((item, ind) => (
-                    <PathImage 
+                    <PathImage
                         key={item.link}
                         link={item.link}
                         title={item.title}
@@ -101,13 +101,13 @@ class PathDisplayer extends React.Component {
             <div id="parent">
             <div className="Path-displayer" id="input">
                 <Alert variant="primary">
-                    <Alert.Heading>Welcome to the WHIMC Path Generator!</Alert.Heading>
+                    <Alert.Heading>Welcome to the WHIMC Path Displayer!</Alert.Heading>
                     <hr />
                     <SessionSelect
                         sessionChange={this.handleSessionChange}
                     />
                     <hr />
-                    <Button 
+                    <Button
                         variant="primary"
                         disabled={this.state.session === null || this.state.loading}
                         onClick={this.generateButtonClick}>
@@ -120,7 +120,7 @@ class PathDisplayer extends React.Component {
             </div>
         )
     }
-    
+
 }
 
 export default PathDisplayer;
