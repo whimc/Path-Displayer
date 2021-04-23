@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/Path-Displayer/static/css/main.ba73e33e.chunk.css",
+    "main.js": "/Path-Displayer/static/js/main.612499b2.chunk.js",
+    "main.js.map": "/Path-Displayer/static/js/main.612499b2.chunk.js.map",
+    "runtime-main.js": "/Path-Displayer/static/js/runtime-main.dc044ece.js",
+    "runtime-main.js.map": "/Path-Displayer/static/js/runtime-main.dc044ece.js.map",
+    "static/css/2.47e06e2e.chunk.css": "/Path-Displayer/static/css/2.47e06e2e.chunk.css",
+    "static/js/2.5ff21a52.chunk.js": "/Path-Displayer/static/js/2.5ff21a52.chunk.js",
+    "static/js/2.5ff21a52.chunk.js.map": "/Path-Displayer/static/js/2.5ff21a52.chunk.js.map",
+    "index.html": "/Path-Displayer/index.html",
+    "precache-manifest.bf8f6a7d91ee8f16bee564f8adfb71b2.js": "/Path-Displayer/precache-manifest.bf8f6a7d91ee8f16bee564f8adfb71b2.js",
+    "service-worker.js": "/Path-Displayer/service-worker.js",
+    "static/css/2.47e06e2e.chunk.css.map": "/Path-Displayer/static/css/2.47e06e2e.chunk.css.map",
+    "static/css/main.ba73e33e.chunk.css.map": "/Path-Displayer/static/css/main.ba73e33e.chunk.css.map",
+    "static/js/2.5ff21a52.chunk.js.LICENSE.txt": "/Path-Displayer/static/js/2.5ff21a52.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.dc044ece.js",
+    "static/css/2.47e06e2e.chunk.css",
+    "static/js/2.5ff21a52.chunk.js",
+    "static/css/main.ba73e33e.chunk.css",
+    "static/js/main.612499b2.chunk.js"
+  ]
+}
