@@ -1,4 +1,4 @@
-const MONTHS_SHORT = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 
+const MONTHS_SHORT = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.',
     'Jul.', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
 const RECENT_SESSIONS = 20;
 const NAME_REGEX = /(\w+)-([0-9]+)-([0-9]+)_(\w+)\..*/;
@@ -50,7 +50,7 @@ export function GetWorldFromImageName(imageName) {
 }
 
 export function QueryAllPlayers(callback) {
-    var query = 'https://rpaowv6m75.execute-api.us-east-2.amazonaws.com/beta/getallusers/';
+    var query = process.env.REACT_APP_GET_ALL_USERS_URL;
     fetch(query).then(result => result.json()).then(data => {
 
         // Sort the names first
@@ -72,7 +72,7 @@ export function QueryAllPlayers(callback) {
 }
 
 export function QueryPlayerSessions(userId, callback) {
-    var query = `https://rpaowv6m75.execute-api.us-east-2.amazonaws.com/beta/getsessions/${userId}`;
+    var query = `${process.env.REACT_APP_GET_SESSIONS_URL}/${userId}`;
     fetch(query).then(result => result.json()).then(data => {
         var sessions = []
         data.forEach(elem => {
@@ -93,12 +93,12 @@ export function QueryPlayerSessions(userId, callback) {
 }
 
 export function QueryRecentSessions(callback) {
-    var query = `https://rpaowv6m75.execute-api.us-east-2.amazonaws.com/beta/getrecentsessions/${RECENT_SESSIONS}`;
+    var query = `${process.env.REACT_APP_GET_RECENT_SESSIONS_URL}/${RECENT_SESSIONS}`;
     fetch(query).then(result => result.json()).then(data => {
 
         var sessions = []
         data.forEach(elem => {
-            
+
             var duration = GetDuration(elem.loginTime, elem.logoutTime)
             sessions.push({
                 value: elem.sessionId,
@@ -116,7 +116,7 @@ export function QueryRecentSessions(callback) {
 }
 
 export function QueryPathGenerator(username, starttime, endtime, callback) {
-    var query = `https://api.henhapl.me/pathgenerator?username=${username}&start_time=${starttime}&end_time=${endtime}`;
+    var query = `${process.env.REACT_APP_PATH_GENERATOR_URL}?username=${username}&start_time=${starttime}&end_time=${endtime}`;
     fetch(query).then(result => result.json()).then(data => {
 
         var images = []
