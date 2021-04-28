@@ -1,25 +1,23 @@
 {
   "files": {
-    "main.css": "/Path-Displayer/static/css/main.9b9d58fa.chunk.css",
-    "main.js": "/Path-Displayer/static/js/main.661624ac.chunk.js",
-    "main.js.map": "/Path-Displayer/static/js/main.661624ac.chunk.js.map",
-    "runtime-main.js": "/Path-Displayer/static/js/runtime-main.dc044ece.js",
-    "runtime-main.js.map": "/Path-Displayer/static/js/runtime-main.dc044ece.js.map",
-    "static/css/2.47e06e2e.chunk.css": "/Path-Displayer/static/css/2.47e06e2e.chunk.css",
-    "static/js/2.db126b0e.chunk.js": "/Path-Displayer/static/js/2.db126b0e.chunk.js",
-    "static/js/2.db126b0e.chunk.js.map": "/Path-Displayer/static/js/2.db126b0e.chunk.js.map",
+    "main.css": "/Path-Displayer/static/css/main.205b754f.chunk.css",
+    "main.js": "/Path-Displayer/static/js/main.a0678d38.chunk.js",
+    "main.js.map": "/Path-Displayer/static/js/main.a0678d38.chunk.js.map",
+    "runtime-main.js": "/Path-Displayer/static/js/runtime-main.ce3f36b8.js",
+    "runtime-main.js.map": "/Path-Displayer/static/js/runtime-main.ce3f36b8.js.map",
+    "static/css/2.266846fb.chunk.css": "/Path-Displayer/static/css/2.266846fb.chunk.css",
+    "static/js/2.90e7823d.chunk.js": "/Path-Displayer/static/js/2.90e7823d.chunk.js",
+    "static/js/2.90e7823d.chunk.js.map": "/Path-Displayer/static/js/2.90e7823d.chunk.js.map",
     "index.html": "/Path-Displayer/index.html",
-    "precache-manifest.956087973f12fd3312f60d53199f19aa.js": "/Path-Displayer/precache-manifest.956087973f12fd3312f60d53199f19aa.js",
-    "service-worker.js": "/Path-Displayer/service-worker.js",
-    "static/css/2.47e06e2e.chunk.css.map": "/Path-Displayer/static/css/2.47e06e2e.chunk.css.map",
-    "static/css/main.9b9d58fa.chunk.css.map": "/Path-Displayer/static/css/main.9b9d58fa.chunk.css.map",
-    "static/js/2.db126b0e.chunk.js.LICENSE.txt": "/Path-Displayer/static/js/2.db126b0e.chunk.js.LICENSE.txt"
+    "static/css/2.266846fb.chunk.css.map": "/Path-Displayer/static/css/2.266846fb.chunk.css.map",
+    "static/css/main.205b754f.chunk.css.map": "/Path-Displayer/static/css/main.205b754f.chunk.css.map",
+    "static/js/2.90e7823d.chunk.js.LICENSE.txt": "/Path-Displayer/static/js/2.90e7823d.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.dc044ece.js",
-    "static/css/2.47e06e2e.chunk.css",
-    "static/js/2.db126b0e.chunk.js",
-    "static/css/main.9b9d58fa.chunk.css",
-    "static/js/main.661624ac.chunk.js"
+    "static/js/runtime-main.ce3f36b8.js",
+    "static/css/2.266846fb.chunk.css",
+    "static/js/2.90e7823d.chunk.js",
+    "static/css/main.205b754f.chunk.css",
+    "static/js/main.a0678d38.chunk.js"
   ]
 }
