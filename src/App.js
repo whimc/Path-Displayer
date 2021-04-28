@@ -3,12 +3,14 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import PathDisplayer from './components/PathDisplayer';
+import GithubFooter from './components/GithubFooter';
 
 function App() {
 
   return (
     <div className="App">
-      <PathDisplayer />
+      <PathDisplayer/>
+      <GithubFooter />
     </div>
   );
 }
