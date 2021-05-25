@@ -1,7 +1,7 @@
 const MONTHS_SHORT = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.',
     'Jul.', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
 const RECENT_SESSIONS = 20;
-const NAME_REGEX = /(\w+)-([0-9]+)-([0-9]+)_(\w+)\..*/;
+const NAME_REGEX = /(\w+)-([0-9]+)-([0-9]+)_(.+)\..*/;
 
 export function IsValidDate(timestamp) {
     if (isNaN(timestamp) || timestamp < 0) {
