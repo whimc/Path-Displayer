@@ -49,12 +49,12 @@ export function GetWorldFromImageName(imageName) {
     return imageName.match(NAME_REGEX)[4];
 }
 
-function fetchWrapper(query, failCallback, successCallback) {
+function fetchWrapper(query, failCallback, successCallback, timeout = 10000) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
         controller.abort()
         failCallback()
-    }, 10000); // Timeout after 10 seconds
+    }, timeout); // Timeout after 10 seconds
 
     return fetch(query, { signal: controller.signal })
         .then(result => {
@@ -157,7 +157,7 @@ export function QueryPathGenerator(username, starttime, endtime, imagesCallback,
             })
         })
         imagesCallback(images)
-    }).catch(err => {
+    }, 60000 /* 1 minute timeout */).catch(err => {
         console.log(err)
         imagesCallback([])
     })

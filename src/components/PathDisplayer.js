@@ -16,10 +16,12 @@ class PathDisplayer extends React.Component {
         this.generateButtonClick = this.generateButtonClick.bind(this);
         this.handleSessionChange = this.handleSessionChange.bind(this);
         this.handleFetchError = this.handleFetchError.bind(this);
+        this.handleGenerateError = this.handleGenerateError.bind(this);
 
         this.state = {
             loading: false,
             error: false,
+            errorMessage: "",
             session: null,
             images: null, //[] array of objects usually
 
@@ -32,7 +34,17 @@ class PathDisplayer extends React.Component {
     }
 
     handleFetchError() {
-        this.setState({ error: true });
+        this.setState({
+            error: true,
+            errorMessage: "There was an error loading the list of players and sessions!",
+        });
+    }
+
+    handleGenerateError() {
+        this.setState({
+            error: true,
+            errorMessage: "There was an error generating the path maps!",
+        })
     }
 
     generateButtonClick() {
@@ -51,7 +63,7 @@ class PathDisplayer extends React.Component {
                         loading: false,
                     })
                 },
-                this.onError
+                this.handleGenerateError
             )
         });
     }
@@ -110,6 +122,7 @@ class PathDisplayer extends React.Component {
                     {this.state.error &&
                         <Alert variant="danger">
                             <b>There was an error loading the player / session list!</b>
+                            <b>{this.state.errorMessage}</b>
                         </Alert>
                     }
                     <Alert variant="primary">
