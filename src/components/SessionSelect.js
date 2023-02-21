@@ -43,14 +43,14 @@ class SessionSelect extends React.Component {
                 allPlayers: data,
                 playersLoading: false,
             })
-        })
+        }, this.props.onError)
 
         helpers.QueryRecentSessions(sessions => {
             this.setState({
                 recentSessions: sessions,
                 recentSessionsLoading: false,
             })
-        })
+        }, this.props.onError)
     }
 
     handleSelectUser(value) {
@@ -89,9 +89,9 @@ class SessionSelect extends React.Component {
                     playerSessionsLoading: false,
                     playerSessionsDisabled: false,
                 });
-            })
+            }, this.props.onError)
         });
-        
+
     }
 
     handleSelectSession(value) {
