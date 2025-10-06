@@ -37,7 +37,7 @@ export function FormatTimestamp(timestamp) {
     return month + ' ' + day + ' ' + year + ' ' + hour + ':' + min.substr(-2) + ' ' + am_pm;
 }
 
-export function GetDuration(startTime, endTime, decimal=false) {
+export function GetDuration(startTime, endTime, decimal = false) {
     var minutes = (endTime - startTime) / 60
 
     if (decimal)
@@ -49,9 +49,32 @@ export function GetWorldFromImageName(imageName) {
     return imageName.match(NAME_REGEX)[4];
 }
 
-export function QueryAllPlayers(callback) {
+function fetchWrapper(query, failCallback, successCallback, timeout = 10000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+        controller.abort()
+        failCallback()
+    }, timeout); // Timeout after 10 seconds
+
+    return fetch(query, { signal: controller.signal })
+        .then(result => {
+            clearTimeout(timeoutId)
+            return result.json()
+        })
+        .then(successCallback)
+        .catch(err => {
+            controller.abort()
+            console.log(err)
+            failCallback()
+        })
+}
+
+export function QueryAllPlayers(playersCallback, errorCallback) {
     var query = process.env.REACT_APP_GET_ALL_USERS_URL;
-    fetch(query).then(result => result.json()).then(data => {
+    fetchWrapper(query, () => {
+        playersCallback([])
+        errorCallback()
+    }, data => {
 
         // Sort the names first
         data.sort(function (a, b) {
@@ -67,13 +90,16 @@ export function QueryAllPlayers(callback) {
                 label: elem.username,
             })
         });
-        callback(users)
+        playersCallback(users)
     })
 }
 
-export function QueryPlayerSessions(userId, callback) {
+export function QueryPlayerSessions(userId, sessionsCallback, errorCallback) {
     var query = `${process.env.REACT_APP_GET_SESSIONS_URL}/${userId}`;
-    fetch(query).then(result => result.json()).then(data => {
+    fetchWrapper(query, () => {
+        sessionsCallback([])
+        errorCallback()
+    }, data => {
         var sessions = []
         data.forEach(elem => {
             var duration = GetDuration(elem.loginTime, elem.logoutTime)
@@ -88,14 +114,16 @@ export function QueryPlayerSessions(userId, callback) {
 
         });
         sessions.reverse()
-        callback(sessions)
+        sessionsCallback(sessions)
     })
 }
 
-export function QueryRecentSessions(callback) {
+export function QueryRecentSessions(sessionsCallback, errorCallback) {
     var query = `${process.env.REACT_APP_GET_RECENT_SESSIONS_URL}/${RECENT_SESSIONS}`;
-    fetch(query).then(result => result.json()).then(data => {
-
+    fetchWrapper(query, () => {
+        sessionsCallback([]);
+        errorCallback();
+    }, data => {
         var sessions = []
         data.forEach(elem => {
 
@@ -111,14 +139,16 @@ export function QueryRecentSessions(callback) {
 
         });
         // sessions.reverse()
-        callback(sessions)
+        sessionsCallback(sessions)
     })
 }
 
-export function QueryPathGenerator(username, starttime, endtime, callback) {
+export function QueryPathGenerator(username, starttime, endtime, imagesCallback, errorCallback) {
     var query = `${process.env.REACT_APP_PATH_GENERATOR_URL}?username=${username}&start_time=${starttime}&end_time=${endtime}`;
-    fetch(query).then(result => result.json()).then(data => {
-
+    fetchWrapper(query, () => {
+        imagesCallback([]);
+        errorCallback();
+    }, data => {
         var images = []
         Object.keys(data.links).forEach(elem => {
             images.push({
@@ -126,9 +156,9 @@ export function QueryPathGenerator(username, starttime, endtime, callback) {
                 link: data.links[elem],
             })
         })
-
-        callback(images)
-    }).catch( err => {
-        callback([])
+        imagesCallback(images)
+    }, 60000 /* 1 minute timeout */).catch(err => {
+        console.log(err)
+        imagesCallback([])
     })
 }

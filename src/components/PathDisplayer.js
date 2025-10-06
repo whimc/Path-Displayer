@@ -15,9 +15,13 @@ class PathDisplayer extends React.Component {
 
         this.generateButtonClick = this.generateButtonClick.bind(this);
         this.handleSessionChange = this.handleSessionChange.bind(this);
+        this.handleFetchError = this.handleFetchError.bind(this);
+        this.handleGenerateError = this.handleGenerateError.bind(this);
 
         this.state = {
             loading: false,
+            error: false,
+            errorMessage: "",
             session: null,
             images: null, //[] array of objects usually
 
@@ -27,6 +31,20 @@ class PathDisplayer extends React.Component {
 
     handleSessionChange(value) {
         this.setState({ session: value });
+    }
+
+    handleFetchError() {
+        this.setState({
+            error: true,
+            errorMessage: "There was an error loading the list of players and sessions!",
+        });
+    }
+
+    handleGenerateError() {
+        this.setState({
+            error: true,
+            errorMessage: "There was an error generating the path maps!",
+        })
     }
 
     generateButtonClick() {
@@ -44,7 +62,8 @@ class PathDisplayer extends React.Component {
                         images: images,
                         loading: false,
                     })
-                }
+                },
+                this.handleGenerateError
             )
         });
     }
@@ -99,24 +118,31 @@ class PathDisplayer extends React.Component {
 
         return (
             <div id="parent">
-            <div className="Path-displayer" id="input">
-                <Alert variant="primary">
-                    <Alert.Heading>Welcome to the WHIMC Path Displayer!</Alert.Heading>
-                    <hr />
-                    <SessionSelect
-                        sessionChange={this.handleSessionChange}
-                    />
-                    <hr />
-                    <Button
-                        variant="primary"
-                        disabled={this.state.session === null || this.state.loading}
-                        onClick={this.generateButtonClick}>
-                        Generate Images
-                    </Button>
-                </Alert>
-                {spinner}
-            </div>
-            {images}
+                <div className="Path-displayer" id="input">
+                    {this.state.error &&
+                        <Alert variant="danger">
+                            <b>There was an error loading the player / session list!</b>
+                            <b>{this.state.errorMessage}</b>
+                        </Alert>
+                    }
+                    <Alert variant="primary">
+                        <Alert.Heading>Welcome to the WHIMC Path Displayer!</Alert.Heading>
+                        <hr />
+                        <SessionSelect
+                            sessionChange={this.handleSessionChange}
+                            onError={this.handleFetchError}
+                        />
+                        <hr />
+                        <Button
+                            variant="primary"
+                            disabled={this.state.session === null || this.state.loading}
+                            onClick={this.generateButtonClick}>
+                            Generate Images
+                        </Button>
+                    </Alert>
+                    {spinner}
+                </div>
+                {images}
             </div>
         )
     }
