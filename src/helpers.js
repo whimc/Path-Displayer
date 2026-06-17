@@ -1,164 +1,225 @@
+import { apiConfig } from './config';
+
 const MONTHS_SHORT = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.',
-    'Jul.', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
+  'Jul.', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
 const RECENT_SESSIONS = 20;
 const NAME_REGEX = /(\w+)-([0-9]+)-([0-9]+)_(.+)\..*/;
 
+const MOCK_PLAYERS = [
+  { userId: 1, username: 'DemoPlayer' },
+  { userId: 2, username: 'ExplorerBot' },
+];
+
+const MOCK_SESSIONS = [
+  {
+    sessionId: 101,
+    userId: 1,
+    username: 'DemoPlayer',
+    loginTime: 1700000000,
+    logoutTime: 1700003600,
+  },
+  {
+    sessionId: 102,
+    userId: 2,
+    username: 'ExplorerBot',
+    loginTime: 1700100000,
+    logoutTime: 1700107200,
+  },
+];
+
+const MOCK_IMAGES = {
+  'DemoPlayer-1700000000-1700003600_overworld.png': 'https://i.imgur.com/placeholder.png',
+};
+
 export function IsValidDate(timestamp) {
-    if (isNaN(timestamp) || timestamp < 0) {
-        return false;
-    }
+  if (isNaN(timestamp) || timestamp < 0) {
+    return false;
+  }
 
-    timestamp = parseInt(timestamp) * 1000
-    var date = new Date(timestamp);
+  const millis = parseInt(timestamp, 10) * 1000;
+  const date = new Date(millis);
 
-    if (isNaN(date.getTime())) {
-        return false;
-    }
-
-    return true;
+  return !isNaN(date.getTime());
 }
 
 export function FormatTimestamp(timestamp) {
-    if (!IsValidDate(timestamp)) {
-        return "N/A" + (timestamp ? ` (${timestamp})` : "");
-    }
+  if (!IsValidDate(timestamp)) {
+    return 'N/A' + (timestamp ? ` (${timestamp})` : '');
+  }
 
-    timestamp = parseInt(timestamp) * 1000
-    var date = new Date(timestamp);
+  const millis = parseInt(timestamp, 10) * 1000;
+  const date = new Date(millis);
 
-    var day = date.getDate();
-    var month = MONTHS_SHORT[date.getMonth()];
-    var year = date.getFullYear();
-    var hour = date.getHours() % 12;
-    if (hour === 0) hour = 12;
-    var min = "0" + date.getMinutes();
-    var am_pm = (date.getHours() >= 12) ? "PM" : "AM";
+  const day = date.getDate();
+  const month = MONTHS_SHORT[date.getMonth()];
+  const year = date.getFullYear();
+  let hour = date.getHours() % 12;
+  if (hour === 0) hour = 12;
+  const min = '0' + date.getMinutes();
+  const amPm = (date.getHours() >= 12) ? 'PM' : 'AM';
 
-    return month + ' ' + day + ' ' + year + ' ' + hour + ':' + min.substr(-2) + ' ' + am_pm;
+  return `${month} ${day} ${year} ${hour}:${min.substr(-2)} ${amPm}`;
 }
 
 export function GetDuration(startTime, endTime, decimal = false) {
-    var minutes = (endTime - startTime) / 60
+  const minutes = (endTime - startTime) / 60;
 
-    if (decimal)
-        return minutes.toFixed(2);
-    return parseInt(minutes, 10);
+  if (decimal) {
+    return minutes.toFixed(2);
+  }
+  return parseInt(minutes, 10);
 }
 
 export function GetWorldFromImageName(imageName) {
-    return imageName.match(NAME_REGEX)[4];
+  const match = imageName.match(NAME_REGEX);
+  return match ? match[4] : imageName;
 }
 
-function fetchWrapper(query, failCallback, successCallback, timeout = 10000) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => {
-        controller.abort()
-        failCallback()
-    }, timeout); // Timeout after 10 seconds
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-    return fetch(query, { signal: controller.signal })
-        .then(result => {
-            clearTimeout(timeoutId)
-            return result.json()
-        })
-        .then(successCallback)
-        .catch(err => {
-            controller.abort()
-            console.log(err)
-            failCallback()
-        })
+async function fetchWrapper(query, failCallback, successCallback, timeout = 10000) {
+  if (!query || query.includes('undefined') || query.includes('null')) {
+    failCallback(new Error('API URL is not configured'));
+    return;
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(query, { signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    successCallback(data);
+  } catch (err) {
+    clearTimeout(timeoutId);
+    const error = err instanceof Error ? err : new Error(String(err));
+    if (error.name === 'AbortError') {
+      error.message = `Request timed out after ${timeout / 1000} seconds`;
+    }
+    console.error('API request failed:', query, error);
+    failCallback(error);
+  }
+}
+
+function mapPlayers(data) {
+  const sorted = [...data].sort((a, b) =>
+    a.username.toLowerCase().localeCompare(b.username.toLowerCase())
+  );
+
+  return sorted.map((elem) => ({
+    value: elem.userId,
+    label: elem.username,
+  }));
+}
+
+function mapSessions(data, includeUsername = false) {
+  const sessions = data.map((elem) => {
+    const duration = GetDuration(elem.loginTime, elem.logoutTime);
+    const label = includeUsername
+      ? `${elem.username}, ${FormatTimestamp(elem.loginTime)} (${duration} mins)`
+      : `${FormatTimestamp(elem.loginTime)} (${duration} mins)`;
+
+    return {
+      value: elem.sessionId,
+      label,
+      userId: elem.userId,
+      username: elem.username,
+      start_time: elem.loginTime,
+      end_time: elem.logoutTime,
+    };
+  });
+
+  if (!includeUsername) {
+    sessions.reverse();
+  }
+
+  return sessions;
+}
+
+function mapPathImages(data) {
+  const links = data?.links;
+  if (!links || Array.isArray(links)) {
+    return [];
+  }
+
+  if (data.success === false) {
+    throw new Error(data.message || 'Path generator returned an error');
+  }
+
+  return Object.entries(links).map(([title, link]) => ({ title, link }));
 }
 
 export function QueryAllPlayers(playersCallback, errorCallback) {
-    var query = process.env.REACT_APP_GET_ALL_USERS_URL;
-    fetchWrapper(query, () => {
-        playersCallback([])
-        errorCallback()
-    }, data => {
+  if (apiConfig.useMockData) {
+    delay(300).then(() => playersCallback(mapPlayers(MOCK_PLAYERS)));
+    return;
+  }
 
-        // Sort the names first
-        data.sort(function (a, b) {
-            var nameA = a.username.toLowerCase(), nameB = b.username.toLowerCase();
-            return nameA.localeCompare(nameB);
-        });
-
-        // Store the entries in an array
-        var users = []
-        data.forEach(elem => {
-            users.push({
-                value: elem.userId,
-                label: elem.username,
-            })
-        });
-        playersCallback(users)
-    })
+  fetchWrapper(
+    apiConfig.getAllUsersUrl,
+    errorCallback,
+    (data) => playersCallback(mapPlayers(data))
+  );
 }
 
 export function QueryPlayerSessions(userId, sessionsCallback, errorCallback) {
-    var query = `${process.env.REACT_APP_GET_SESSIONS_URL}/${userId}`;
-    fetchWrapper(query, () => {
-        sessionsCallback([])
-        errorCallback()
-    }, data => {
-        var sessions = []
-        data.forEach(elem => {
-            var duration = GetDuration(elem.loginTime, elem.logoutTime)
-            sessions.push({
-                value: elem.sessionId,
-                label: `${FormatTimestamp(elem.loginTime)} (${duration} mins)`,
-                userId: elem.userId,
-                // username: elem.username, // There is no username included!
-                start_time: elem.loginTime,
-                end_time: elem.logoutTime,
-            })
+  if (apiConfig.useMockData) {
+    const sessions = MOCK_SESSIONS.filter((session) => session.userId === userId);
+    delay(300).then(() => sessionsCallback(mapSessions(sessions)));
+    return;
+  }
 
-        });
-        sessions.reverse()
-        sessionsCallback(sessions)
-    })
+  fetchWrapper(
+    `${apiConfig.getSessionsUrl}/${userId}`,
+    errorCallback,
+    (data) => sessionsCallback(mapSessions(data))
+  );
 }
 
 export function QueryRecentSessions(sessionsCallback, errorCallback) {
-    var query = `${process.env.REACT_APP_GET_RECENT_SESSIONS_URL}/${RECENT_SESSIONS}`;
-    fetchWrapper(query, () => {
-        sessionsCallback([]);
-        errorCallback();
-    }, data => {
-        var sessions = []
-        data.forEach(elem => {
+  if (apiConfig.useMockData) {
+    delay(300).then(() => sessionsCallback(mapSessions(MOCK_SESSIONS, true)));
+    return;
+  }
 
-            var duration = GetDuration(elem.loginTime, elem.logoutTime)
-            sessions.push({
-                value: elem.sessionId,
-                label: `${elem.username}, ${FormatTimestamp(elem.loginTime)} (${duration} mins)`,
-                userId: elem.userId,
-                username: elem.username,
-                start_time: elem.loginTime,
-                end_time: elem.logoutTime,
-            })
-
-        });
-        // sessions.reverse()
-        sessionsCallback(sessions)
-    })
+  fetchWrapper(
+    `${apiConfig.getRecentSessionsUrl}/${RECENT_SESSIONS}`,
+    errorCallback,
+    (data) => sessionsCallback(mapSessions(data, true))
+  );
 }
 
 export function QueryPathGenerator(username, starttime, endtime, imagesCallback, errorCallback) {
-    var query = `${process.env.REACT_APP_PATH_GENERATOR_URL}?username=${username}&start_time=${starttime}&end_time=${endtime}`;
-    fetchWrapper(query, () => {
+  if (apiConfig.useMockData) {
+    delay(800).then(() => {
+      if (username === 'DemoPlayer') {
+        imagesCallback(mapPathImages({ success: true, links: MOCK_IMAGES }));
+      } else {
         imagesCallback([]);
-        errorCallback();
-    }, data => {
-        var images = []
-        Object.keys(data.links).forEach(elem => {
-            images.push({
-                title: elem,
-                link: data.links[elem],
-            })
-        })
-        imagesCallback(images)
-    }, 60000 /* 1 minute timeout */).catch(err => {
-        console.log(err)
-        imagesCallback([])
-    })
+      }
+    });
+    return;
+  }
+
+  const query = `${apiConfig.pathGeneratorUrl}?username=${encodeURIComponent(username)}&start_time=${starttime}&end_time=${endtime}`;
+  fetchWrapper(
+    query,
+    errorCallback,
+    (data) => {
+      try {
+        imagesCallback(mapPathImages(data));
+      } catch (err) {
+        errorCallback(err);
+      }
+    },
+    60000
+  );
 }
