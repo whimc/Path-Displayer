@@ -1,3 +1,5 @@
+<mark>**[This project has been superseded by WHIMC-explorer](https://github.com/whimc/WHIMC-explorer)**</mark>
+
 # Path-Displayer
 
 Web app for the [WHIMC](https://whimc.education.illinois.edu/) project that visualizes Minecraft session path maps. It connects to WHIMC backend APIs for player/session data and the [Path Generator API](https://github.com/whimc/Path-Generator) to render exploration maps.
